@@ -7,35 +7,39 @@ const sordDirections = {};
 if (thead) {
   thead.addEventListener('click', (e) => {
     const th = e.target.closest('th');
-    if (!th) return;
+
+    if (!th) {
+      return;
+    }
 
     const columnIndex = th.cellIndex;
     const rowsArray = Array.from(tbody.querySelectorAll('tr'));
-    
-    const currentDirection = sordDirections[columnIndex] || 'desc';
-    const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+
+    const currentDirection = sordDirections[columnIndex] || 'asc';
+    const newDirection = currentDirection === 'desc' ? 'asc' : 'desc';
+
     sordDirections[columnIndex] = newDirection;
 
     rowsArray.sort((a, b) => {
-    const valueA = a.cells[columnIndex].textContent.trim();
-    const valueB = b.cells[columnIndex].textContent.trim();
+      const valueA = a.cells[columnIndex].textContent.trim();
+      const valueB = b.cells[columnIndex].textContent.trim();
 
-    const cleanedA = valueA.replace('$', '').replaceAll(',', '');
-    const cleanedB = valueB.replace('$', '').replaceAll(',', '');
-    
-    const numA = Number(cleanedA);
-    const numB = Number(cleanedB);
+      const cleanedA = valueA.replace('$', '').replaceAll(',', '');
+      const cleanedB = valueB.replace('$', '').replaceAll(',', '');
 
-    if (!Number.isNaN(numA) && !Number.isNaN(numB)) {
-      return newDirection === 'asc' ? numA - numB : numB - numA;
-    }
+      const numA = Number(cleanedA);
+      const numB = Number(cleanedB);
 
-    return newDirection === 'asc'
-    ? valueA.localeCompare(valueB)
-    : valueB.localeCompare(valueA);
-  });
+      if (!Number.isNaN(numA) && !Number.isNaN(numB)) {
+        return newDirection === 'asc' ? numA - numB : numB - numA;
+      }
 
-  rowsArray.forEach((row) => tbody.appendChild(row));
+      return newDirection === 'asc'
+        ? valueA.localeCompare(valueB)
+        : valueB.localeCompare(valueA);
+    });
+
+    rowsArray.forEach((row) => tbody.appendChild(row));
   });
 }
 
@@ -92,6 +96,7 @@ form.addEventListener('submit', (e) => {
 
   if (!employeeName || !position || !ageString || !salaryString || !office) {
     showNotification('error', 'Error', 'All fields are required');
+
     return;
   }
 
