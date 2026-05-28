@@ -1,6 +1,43 @@
 'use strict';
 
 const tbody = document.querySelector('tbody');
+const thead = document.querySelector('thead');
+const sordDirections = {};
+
+if (thead) {
+  thead.addEventListener('click', (e) => {
+    const th = e.target.closest('th');
+    if (!th) return;
+
+    const columnIndex = th.cellIndex;
+    const rowsArray = Array.from(tbody.querySelectorAll('tr'));
+    
+    const currentDirection = sordDirections[columnIndex] || 'desc';
+    const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+    sordDirections[columnIndex] = newDirection;
+
+    rowsArray.sort((a, b) => {
+    const valueA = a.cells[columnIndex].textContent.trim();
+    const valueB = b.cells[columnIndex].textContent.trim();
+
+    const cleanedA = valueA.replace('$', '').replaceAll(',', '');
+    const cleanedB = valueB.replace('$', '').replaceAll(',', '');
+    
+    const numA = Number(cleanedA);
+    const numB = Number(cleanedB);
+
+    if (!Number.isNaN(numA) && !Number.isNaN(numB)) {
+      return newDirection === 'asc' ? numA - numB : numB - numA;
+    }
+
+    return newDirection === 'asc'
+    ? valueA.localeCompare(valueB)
+    : valueB.localeCompare(valueA);
+  });
+
+  rowsArray.forEach((row) => tbody.appendChild(row));
+  });
+}
 
 tbody.addEventListener('click', (e) => {
   const row = e.target.closest('tr');
@@ -14,6 +51,8 @@ tbody.addEventListener('click', (e) => {
   if (active) {
     active.classList.remove('active');
   }
+
+  row.classList.add('active');
 });
 
 const form = document.createElement('form');
@@ -47,9 +86,17 @@ form.addEventListener('submit', (e) => {
 
   const employeeName = form.elements.name.value;
   const position = form.elements.position.value;
-  const age = +form.elements.age.value;
-  const salary = +form.elements.salary.value;
+  const ageString = form.elements.age.value;
+  const salaryString = form.elements.salary.value;
   const office = form.elements.office.value;
+
+  if (!employeeName || !position || !ageString || !salaryString || !office) {
+    showNotification('error', 'Error', 'All fields are required');
+    return;
+  }
+
+  const age = +ageString;
+  const salary = +salaryString;
 
   if (employeeName.length < 4) {
     showNotification(
@@ -67,8 +114,6 @@ form.addEventListener('submit', (e) => {
     return;
   }
 
-  showNotification('success', 'Success', 'Employee added successfully');
-
   const tr = document.createElement('tr');
 
   tr.innerHTML = `
@@ -80,6 +125,9 @@ form.addEventListener('submit', (e) => {
 `;
 
   tbody.append(tr);
+
+  showNotification('success', 'Success', 'Employee added successfully');
+
   form.reset();
 });
 
