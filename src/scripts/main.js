@@ -15,8 +15,8 @@ if (thead) {
     const columnIndex = th.cellIndex;
     const rowsArray = Array.from(tbody.querySelectorAll('tr'));
 
-    const currentDirection = sordDirections[columnIndex] || 'asc';
-    const newDirection = currentDirection === 'desc' ? 'asc' : 'desc';
+    const currentDirection = sordDirections[columnIndex] || 'desc';
+    const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
 
     sordDirections[columnIndex] = newDirection;
 
